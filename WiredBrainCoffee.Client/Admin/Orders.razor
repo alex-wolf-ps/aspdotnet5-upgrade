@@ -1,0 +1,31 @@
+﻿@namespace WiredBrainCoffee.Admin
+@inject IOrderService OrderService
+@inject HttpClient Http
+ 
+<div>
+    <h2>Order History</h2>
+    <hr />
+    <div class="order-history">
+        <Virtualize ItemsProvider="LoadOrders" Context="order" ItemSize="127">
+            <div class="card">
+                <div class="card-body">
+                    <span><strong>@order.Id</strong></span>
+                    <span>@order.Notes</span>
+                    <span>@order.Total.ToString("C")</span>
+                    <span>@order.Created</span>
+                    <span><Button class="btn btn-success">Details</Button></span>
+                </div>
+            </div>
+        </Virtualize>
+    </div>
+</div>
+
+
+@code {
+    private async ValueTask<ItemsProviderResult<Order>> LoadOrders(ItemsProviderRequest request)
+    {
+        var orderHistory = await OrderService.GetPaginatedOrders(request.StartIndex, request.Count);
+
+        return new ItemsProviderResult<Order>(orderHistory.Orders, orderHistory.TotalOrderCount);
+    }
+}
